@@ -9,5 +9,5 @@ var app = new Root({
   el:'body'
 });
 Model.subject.subscribe((state) => {
-  this.set('state', state)
+  app.set('state', state)
 });
