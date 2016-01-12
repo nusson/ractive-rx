@@ -1,7 +1,7 @@
 # RxJs implementation for ractive
 
 I just started from this (nice post)[https://gist.github.com/justinwoo/08f9f8fcdcf865025f18]
-so I downloaded (this repo)[https://github.com/justinwoo/react-rxjs-flow]
+so I downloaded (this repo)[https://github.com/justinwoo/react-rxjs-flow/tree/each-intent-subject]
 and translate it for (Ractive)[http://www.ractivejs.org/]
 
 ## Thanks
