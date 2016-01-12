@@ -1,27 +1,20 @@
-var React = require('react');
-
+var Ractive = require('ractive');
 var Intent = require('../intent');
 
-class Root extends React.Component {
-
-  constructor() {
-    super();
-
-    this.handleIncrement = function () {
-      Intent.incrementCounter();
+var Root = Ractive.extend({
+  template: '<div> <h1>Hello</h1>  <p>counter: {{state.counter}}</p>  <button on-click="increment">increment</button></div>',
+  data: function(){
+    return {
+      state:{
+        counter:0
+      }
     }
+  },
+  onconstruct() {
+    this.on('increment', function () {
+      Intent.incrementCounter();
+    })
   }
-
-  render() {
-    console.log('props', this.props);
-    return (
-      <div>
-        <h1>Hello</h1>
-        <p>counter: {this.props.counter}</p>
-        <button onClick={this.handleIncrement}>increment</button>
-      </div>
-    );
-  }
-}
+});
 
 module.exports = Root;
