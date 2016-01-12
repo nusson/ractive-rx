@@ -1,69 +1,27 @@
-import React from 'react';
+var React = require('react');
 
-import {handleOnScroll} from '../intents/user-scroll';
-import {setContainerWidth} from '../intents/container-resize';
+var Intent = require('../intent');
 
-import THead from './thead';
-import TBody from './tbody';
-import FilterControls from './filter-controls';
+class Root extends React.Component {
 
-let Root = React.createClass({
-  render: function () {
-    let {
-      tableHeight,
-      rowHeight,
-      columns,
-      rowCount,
-      visibleIndices,
-      columnWidths,
-      rows,
-      columnSort,
-      filterEvenRows
-    } = this.props;
+  constructor() {
+    super();
 
-    let staticHeaderTableStyle = {
-      overflowX: 'hidden',
-      borderBottom: '1px solid black',
-      width: '100%'
-    };
+    this.handleIncrement = function () {
+      Intent.incrementCounter();
+    }
+  }
 
-    let scrollTableContainerStyle = {
-      position: 'relative',
-      overflowX: 'hidden',
-      borderBottom: '1px solid black',
-      height: tableHeight + 'px',
-    };
-
+  render() {
+    console.log('props', this.props);
     return (
-      <div id="app-container">
-        <FilterControls {...{filterEvenRows}}/>
-        <div className="static-header-table-container">
-          <table
-            className="static-header-table" style={staticHeaderTableStyle}>
-            <THead {...{columns, columnWidths, columnSort}}/>
-          </table>
-        </div>
-        <div ref="ScrollTableContainer" className="scroll-table-container" style={scrollTableContainerStyle}
-          onScroll={handleOnScroll}>
-          <table className="scroll-table" style={{height: rowCount * rowHeight + 'px'}}>
-            <TBody {...{rowHeight, visibleIndices, columnWidths, rows}}/>
-          </table>
-        </div>
+      <div>
+        <h1>Hello</h1>
+        <p>counter: {this.props.counter}</p>
+        <button onClick={this.handleIncrement}>increment</button>
       </div>
     );
-  },
-
-  componentDidMount: function () {
-    let scrollTableContainerNode = React.findDOMNode(this.refs.ScrollTableContainer);
-    let getScrollTableContainerNodeWidth = () => scrollTableContainerNode.offsetWidth;
-
-    Rx.Observable.fromEvent(window, 'resize')
-    .map(getScrollTableContainerNodeWidth)
-    .debounce(50)
-    .distinctUntilChanged()
-    .startWith(getScrollTableContainerNodeWidth())
-    .subscribe(value => setContainerWidth(value));
   }
-});
+}
 
-export default Root;
+module.exports = Root;

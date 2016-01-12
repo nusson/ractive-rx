@@ -1,18 +1,15 @@
-import {scrollTop$} from './intents/user-scroll';
-import {containerWidth$} from './intents/container-resize';
-import {tableData$} from './intents/table-data';
-import {columnSort$} from './intents/column-sort';
-import {filterEvenRows$} from './intents/filter-rows';
+var Rx = require('rx');
 
-function intent() {
-  let actions = {
-    scrollTop$,
-    containerWidth$,
-    tableData$,
-    columnSort$,
-    filterEvenRows$
-  };
-  return actions;
-}
+var Keys = require('./keys');
 
-export default intent;
+var intentSubject = new Rx.ReplaySubject(1);
+
+module.exports = {
+  subject: intentSubject,
+
+  incrementCounter: function () {
+    intentSubject.onNext({
+      key: Keys.INCREMENT_COUNTER
+    });
+  }
+};

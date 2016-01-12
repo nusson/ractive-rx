@@ -1,81 +1,36 @@
-import Rx from 'rx';
+var Rx = require('rx');
+var update = require('react/lib/update');
 
-import makeVisibleIndices$ from './models/make-visible-indices';
-import makeColumnWidths$ from './models/make-column-widths';
-import makeSortedRows$ from './models/make-sorted-rows';
-import makeFilteredRows$ from './models/make-filtered-rows';
+var Keys = require('./keys');
+var Intent = require('./intent');
 
-let defaultTableData = {
-  columns: [],
-  defaultColumnWidths: [],
-  rows: []
+var subject = new Rx.ReplaySubject(1);
+
+var state = {
+  counter: 0
 };
 
-let defaultColumnSort = {
-  column: null,
-  sortDirection: null
-};
-
-function model(actions) {
-  let columnSort$ = actions.columnSort$.startWith(defaultColumnSort);
-  let filterEvenRows$ = actions.filterEvenRows$.startWith(false);
-
-  let tableData$ = actions.tableData$.startWith(defaultTableData);
-  let columns$ = tableData$.map(data => data.columns);
-  let defaultColumnWidths$ = tableData$.map(data => data.defaultColumnWidths);
-  let rawRows$ = tableData$.map(data => data.rows);
-
-  let sortedRows$ = makeSortedRows$(rawRows$, columnSort$);
-
-  let rows$ = makeFilteredRows$(sortedRows$, filterEvenRows$);
-  let rowCount$ = rows$.map(rows => rows.length);
-
-  let tableHeight$ = Rx.Observable.just(500);
-  let rowHeight$ = Rx.Observable.just(30);
-  let scrollTop$ = actions.scrollTop$.startWith(0);
-
-  let visibleIndices$ = makeVisibleIndices$(
-    tableHeight$, rowHeight$, rowCount$, scrollTop$
-  );
-
-  let containerWidth$ = actions.containerWidth$.startWith(window.innerWidth);
-  let columnWidths$ = makeColumnWidths$(
-    defaultColumnWidths$,
-    containerWidth$
-  );
-
-  return Rx.Observable.combineLatest(
-    tableHeight$,
-    rowHeight$,
-    columns$,
-    rowCount$,
-    visibleIndices$,
-    columnWidths$,
-    rows$,
-    columnSort$,
-    filterEvenRows$,
-    (
-      tableHeight,
-      rowHeight,
-      columns,
-      rowCount,
-      visibleIndices,
-      columnWidths,
-      rows,
-      columnSort,
-      filterEvenRows
-    ) => ({
-      tableHeight,
-      rowHeight,
-      columns,
-      rowCount,
-      visibleIndices,
-      columnWidths,
-      rows,
-      columnSort,
-      filterEvenRows
-    })
-  );
+function incrementCounter() {
+  state = update(state, {
+    $merge: {
+      counter: state.counter + 1
+    }
+  });
+  subject.onNext(state);
 }
 
-export default model;
+Intent.subject.subscribe(function (payload) {
+  switch(payload.key) {
+    case Keys.INCREMENT_COUNTER:
+      incrementCounter();
+      break;
+    default:
+      console.warn(`${payload.key} not recognized in model.`);
+  }
+});
+
+subject.onNext(state);
+
+module.exports = {
+  subject: subject
+};

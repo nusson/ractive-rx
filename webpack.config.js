@@ -3,12 +3,12 @@ var path = require('path');
 module.exports = {
 
   entry: [
-    './src/main'
+    './src/index'
   ],
 
   output: {
-    path: path.join(__dirname, 'target'),
-    filename: 'main.js'
+    path: path.join(__dirname, 'build'),
+    filename: 'index.js'
   },
 
   module: {
